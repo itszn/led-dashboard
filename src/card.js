@@ -15,7 +15,8 @@ import {
 import { XYCoord } from 'dnd-core'
 
 const card_wrapper_style = {
-    paddingBottom: '10px'
+    paddingBottom: '10px',
+    position: 'initial',
 }
 
 const card_style = {
@@ -72,6 +73,9 @@ const cardTarget = {
 }
 
 class Card extends React.Component {
+    constructor(props) {
+        super(props)
+    }
     render() {
         const {
             text,
@@ -86,25 +90,37 @@ class Card extends React.Component {
             connectDropTarget &&
                 connectDropTarget(
                     <div>
-                    <Resizable
-                        defaultSize={{
-                            width:200,
-                            height:200
+                    <Rnd
+                        size={{ width: '100px', height: this.props.height+'px' }}
+                        position={{ x: 0, y:0 }}
+                        onResize={(e, direction, ref, delta, position) => {
+                            /*
+                            this.setState({
+                                width: parseInt(ref.style.width),
+                                height: parseInt(ref.style.height)
+                            });
+                            */
+                            this.props.resizeZone(this, parseInt(ref.style.height));
                         }}
-                        enable={{
-                            bottom: true,
+                        enableResizing={{
+                            bottom: !this.props.last,
                             top: false,
-                            right: false,
+                            right: true,
                             left: false,
                             topRight: false,
                             bottomRight: false,
                             bottomLeft: false,
                             topLeft: false
                         }}
+                        resizeGrid={[5,5]}
+                        minHeight={30}
+                        maxHeight={240*2+30}
+                        disableDragging={true}
                         style={{ ...card_wrapper_style}}
                     >
-                    {connectDragSource(<div style={{ ...card_style, opacity }}>{text}</div>)}
-                        </Resizable></div>
+                    {connectDragSource(<div style={{ ...card_style, opacity }}>{text} {
+                        (this.props.height-30)/5}</div>)}
+                        </Rnd></div>
             )
         )
     }
