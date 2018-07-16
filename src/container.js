@@ -18,19 +18,19 @@ class Container extends React.Component {
             cards: [
                 {
                     id: 1,
-                    text: 'Test 1',
+                    text: 'Zone 1',
                 },
                 {
                     id: 2,
-                    text: 'Test 2',
+                    text: 'Zone 2',
                 },
                 {
                     id: 3,
-                    text: 'Test 3',
+                    text: 'Zone 3',
                 },
                 {
                     id: 4,
-                    text: 'Test 4',
+                    text: 'Zone 4',
                 },
             ],
         }

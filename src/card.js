@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { findDOMNode } from 'react-dom'
 import Resizable from 're-resizable'
+import Rnd from 'react-rnd'
 import {
     DragSource,
     DropTarget,
@@ -13,11 +14,15 @@ import {
 } from 'react-dnd'
 import { XYCoord } from 'dnd-core'
 
+const card_wrapper_style = {
+    paddingBottom: '10px'
+}
 
-const style = {
+const card_style = {
     border: '1px dashed gray',
     //padding: '0.5rem 1rem',
     //marginBottom: '.5rem',
+    //margin: '10%',
     backgroundColor: 'white',
     cursor: 'move',
     height: '100%'
@@ -79,7 +84,6 @@ class Card extends React.Component {
         return (
             connectDragSource &&
             connectDropTarget &&
-            connectDragSource(
                 connectDropTarget(
                     <div>
                     <Resizable
@@ -87,9 +91,20 @@ class Card extends React.Component {
                             width:200,
                             height:200
                         }}
+                        enable={{
+                            bottom: true,
+                            top: false,
+                            right: false,
+                            left: false,
+                            topRight: false,
+                            bottomRight: false,
+                            bottomLeft: false,
+                            topLeft: false
+                        }}
+                        style={{ ...card_wrapper_style}}
                     >
-                    <div style={{ ...style, opacity }}>{text}</div>
-                        </Resizable></div>),
+                    {connectDragSource(<div style={{ ...card_style, opacity }}>{text}</div>)}
+                        </Resizable></div>
             )
         )
     }
