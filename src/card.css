@@ -1,0 +1,17 @@
+.zoneCardWrapper {
+    width: 100%;
+    padding-bottom: 10px;
+    position: initial;
+}
+
+.zoneCard {
+    width: 100%;
+    /*border: 1px dashed gray;*/
+    cursor: move;
+    height: 100%;
+    padding-left: 10px;
+}
+
+.selectedCard {
+    box-shadow: inset 0 0 5px 1px red !important;
+}

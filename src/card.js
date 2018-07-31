@@ -14,17 +14,19 @@ import {
 } from 'react-dnd'
 import { XYCoord } from 'dnd-core'
 
+import Lock from '@material-ui/icons/Lock'
+import LockOpen from '@material-ui/icons/LockOpen'
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography'
+
+import style from './card.css'
+
 const card_wrapper_style = {
     paddingBottom: '10px',
     position: 'initial',
 }
 
 const card_style = {
-    border: '1px dashed gray',
-    //padding: '0.5rem 1rem',
-    //marginBottom: '.5rem',
-    //margin: '10%',
-    backgroundColor: 'white',
     cursor: 'move',
     height: '100%'
 }
@@ -36,6 +38,17 @@ const cardSource = {
             index: props.index,
         }
     },
+    endDrag(props, monitor, component) {
+        const index = monitor.getItem().index;
+        const id = monitor.getItem().id;
+        if (!component) {
+            return null;
+        }
+        const res = monitor.getDropResult();
+        if (monitor.didDrop() && res && res.delete) {
+            props.removeZone(index);
+        }
+    }
 }
 
 const cardTarget = {
@@ -58,30 +71,52 @@ const cardTarget = {
 
         const hoverClientY = clientOffset.y - hoverBoundingRect.top;
 
-        if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY && dragIndex != -1) {
             return;
         }
 
-        if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY && dragIndex != -1) {
             return;
         }
 
         props.moveCard(dragIndex, hoverIndex);
+        let i = monitor.getItem();
+        if (i.madeCard === false) {
+            i.madeCard = true;
+        }
 
-        monitor.getItem().index = hoverIndex;
+        i.index = hoverIndex;
     },
+    drop(props, monitor, component) {
+        if (!component) {
+            return null;
+        }
+        const id = monitor.getItem().id;
+        if (parseInt(id) == window.max_id) {
+            component.props.addZone(monitor.getItem().index);
+            window.max_id++;
+        } else {
+            component.props.updateZones();
+        }
+    }
 }
 
 class Card extends React.Component {
     constructor(props) {
         super(props)
+    };
+
+    selectZone = () =>  {
+        this.props.selectZone(this.props.zone.id);
     }
+
     render() {
         const {
-            text,
+            selected,
             isDragging,
             connectDragSource,
             connectDropTarget,
+            zone
         } = this.props;
         const opacity = isDragging ? 0 : 1;
 
@@ -91,7 +126,7 @@ class Card extends React.Component {
                 connectDropTarget(
                     <div>
                     <Rnd
-                        size={{ width: '100px', height: this.props.height+'px' }}
+                        size={{ width: '100%', height: this.props.height+'px' }}
                         position={{ x: 0, y:0 }}
                         onResize={(e, direction, ref, delta, position) => {
                             /*
@@ -105,21 +140,46 @@ class Card extends React.Component {
                         enableResizing={{
                             bottom: !this.props.last,
                             top: false,
-                            right: true,
+                            right: false,
                             left: false,
                             topRight: false,
                             bottomRight: false,
                             bottomLeft: false,
                             topLeft: false
                         }}
-                        resizeGrid={[5,5]}
-                        minHeight={30}
-                        maxHeight={240*2+30}
+                        resizeGrid={[2,2]}
+                        minHeight={80}
+                        maxHeight={240*2+80}
+                        onResizeStop={this.props.updateZones}
                         disableDragging={true}
+                        className={style.zoneCardWrapper}
                         style={{ ...card_wrapper_style}}
                     >
-                    {connectDragSource(<div style={{ ...card_style, opacity }}>{text} {
-                        (this.props.height-30)/5}</div>)}
+                    {connectDragSource(
+                        <div style={{ ...card_style, opacity }}>
+                        <Paper
+                            elevation={isDragging? 1 : (selected? 2:0)}
+                            className={style.zoneCard+' '+(selected? style.selectedCard : '')}
+                            onClick={this.selectZone}
+                        >
+                            <Typography variant="headline" component="h4" style={{fontSize: 14}}>
+                            <span onClick={()=>{this.props.lockZone(this)}}>
+                            {(zone.locked?
+                              (<Lock style={{paddingTop:10, width: '.8em', cursor: 'pointer'}}/>) :
+                              (<LockOpen style={{paddingTop:10, width: '.8em', cursor: 'pointer'}}/>))
+                            }
+                            </span>
+                            {zone.name} 
+                            </Typography>
+                            <Typography  component="p" style={{fontSize: 14}}>
+                                Module: {zone.module}
+                            </Typography>
+                            <Typography  component="p" style={{fontSize: 14}}>
+                                LEDs: {(this.props.height-80)/2}
+                            </Typography>
+                        </Paper>
+                        </div>
+                    )}
                         </Rnd></div>
             )
         )

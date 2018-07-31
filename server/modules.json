@@ -1,0 +1,39 @@
+[
+    {
+        "name":"solid",
+        "settings":{
+            "color": "#ffffff",
+            "power": true,
+            "step_delay": 250
+        },
+        "allow_dbus": true
+    },
+    {
+        "name":"rainbow",
+        "settings":{
+            "fade_as_whole": false,
+            "steps": 100,
+            "step_delay": 10
+        },
+        "allow_dbus": false
+    },
+    {
+        "name":"cylon",
+        "settings":{
+            "fade": false,
+            "color": "#ff0000",
+            "at_once": 1,
+            "step_delay": 10
+        },
+        "allow_dbus": false
+    },
+    {
+        "name":"morse",
+        "settings":{
+            "color": "#ff0000",
+            "text": "sos",
+            "step_delay": 200
+        },
+        "allow_dbus": false
+    }
+]
