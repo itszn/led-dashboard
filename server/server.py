@@ -1,5 +1,6 @@
 import os
 import json
+import time
 
 from flask import Flask, jsonify, send_from_directory, request, abort
 from flask_cors import CORS
@@ -51,6 +52,7 @@ class ZoneManager(object):
 
         with open(CONFIG_LOCATION,'w') as f:
             json.dump(config, f)
+        time.sleep(1)
         os.system('lightctl reload-conf')
 
     def set_zone(self, zone_id, new_zone):
