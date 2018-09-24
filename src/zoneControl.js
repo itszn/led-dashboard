@@ -38,12 +38,17 @@ class ZoneInfo_ extends React.Component {
         if (zone.pastSettings === undefined) {
             zone.pastSettings = {};
         }
-        zone.pastSettings[zone.module] = zone.settings;
+        zone.pastSettings[zone.module] = {
+            settings: zone.settings,
+            allow_dbus: zone.allow_dbus
+        }
         zone.module = modName;
         if (modName in zone.pastSettings) {
-            zone.settings = zone.pastSettings[modName];
+            zone.settings = zone.pastSettings[modName].settings;
+            zone.allow_dbus = zone.pastSettings[modName].allow_dbus;
         } else {
-            zone.settings = $.extend(true, {}, mod.settings)
+            zone.settings = $.extend(true, {}, mod.settings);
+            zone.allow_dbus = mod.allow_dbus;
         }
         this.props.redraw();
         this.props.update();
@@ -98,7 +103,7 @@ class ZoneControl extends React.Component {
                     length: zone.leds,
                     module: zone.module,
                     settings: zone.settings,
-                    allow_dbug: zone.allow_dbus,
+                    allow_dbus: zone.allow_dbus,
                     step_delay: zone.step_delay
                 }
             }),
