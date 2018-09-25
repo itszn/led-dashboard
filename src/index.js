@@ -22,6 +22,8 @@ const theme = createMuiTheme({
   },
 });
 
+window.zone_inst_map = {};
+
 /*
 let zones = [
     {
@@ -175,10 +177,6 @@ class Index extends React.Component {
                         selected={this.state.selectedZone}
                         addZone={this.addZone}
                         removeZone={this.removeZone}
-                        ref={function(zones) {
-                            console.log(zones);
-                            window.zones_instance = zones;
-                        }}
                     />
                 </Grid>
                 <Grid item sm={9} xs={8}>

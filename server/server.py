@@ -8,8 +8,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-#CONFIG_LOCATION = 'config.json'
-CONFIG_LOCATION = '/home/pi/.config/rgbd/config.json'
+CONFIG_LOCATION = 'config.json'
+#CONFIG_LOCATION = '/home/pi/.config/rgbd/config.json'
 
 if not os.path.exists(CONFIG_LOCATION):
     raise Exception('Could not find config file at {}'.format(CONFIG_LOCATION))

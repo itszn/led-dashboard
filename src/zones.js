@@ -71,10 +71,13 @@ class Zones extends React.Component {
         this.state = {
             cards: this.props.cards
         }
-        this.leds = 240;
+        this.leds = window.CONFIG.length;
         for (let c of this.state.cards) {
             c.leds = c.length;
         }
+
+        window.zones_instance = this;
+        this.zone_inst_map = {};
 
         /*
         let leds_left = this.leds;
@@ -189,7 +192,7 @@ class Zones extends React.Component {
                 <div className={classes.zoneWrapper}>
                     {cards.map((card, i) => (
                         <Card
-                            key={card.id}
+                            key={card.id+card.name+card.module}
                             index={i}
                             zone={card}
                             moveCard={this.moveCard}
@@ -202,6 +205,9 @@ class Zones extends React.Component {
                             updateZones={this.updateZones}
                             addZone={this.addZone}
                             removeZone={this.removeZone}
+                            ref={(zone) => {
+                                this.zone_inst_map[card.id] = zone
+                            }}
                         />
                     ))}
                 </div>
@@ -295,7 +301,7 @@ class Zones extends React.Component {
                 'solid',
                 window.max_id.toString(),
                 'zone_'+window.max_id,
-                (this.state.cards.length === 0? 240 : 0));
+                (this.state.cards.length === 0? window.CONFIG.length : 0));
 
             this.setState(
                 update(this.state, {

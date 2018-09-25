@@ -104,6 +104,7 @@ const cardTarget = {
 class Card extends React.Component {
     constructor(props) {
         super(props)
+        window.zone_inst_map[props.zone.id] = this;
     };
 
     selectZone = () =>  {
@@ -149,7 +150,7 @@ class Card extends React.Component {
                         }}
                         resizeGrid={[2,2]}
                         minHeight={80}
-                        maxHeight={240*2+80}
+                        maxHeight={window.CONFIG.length*window.CONFIG.clicks_per_led+80}
                         onResizeStop={this.props.updateZones}
                         disableDragging={true}
                         className={style.zoneCardWrapper}
@@ -175,7 +176,7 @@ class Card extends React.Component {
                                 Module: {zone.module}
                             </Typography>
                             <Typography  component="p" style={{fontSize: 14}}>
-                                LEDs: {(this.props.height-80)/2}
+                                LEDs: {(this.props.height-80)/window.CONFIG.clicks_per_led}
                             </Typography>
                         </Paper>
                         </div>

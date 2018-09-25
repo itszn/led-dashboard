@@ -13,6 +13,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import { ModuleWrapper } from "./modules.js";
 
@@ -27,6 +30,8 @@ class ZoneInfo_ extends React.Component {
         super(props);
         this.state = {
             module: this.props.zone.module,
+            name: this.props.zone.name,
+            timeout: null
         };
     }
 
@@ -52,6 +57,26 @@ class ZoneInfo_ extends React.Component {
         }
         this.props.redraw();
         this.props.update();
+        zones_instance.forceUpdate();
+    }
+
+    changeZoneName = (event) => {
+        let name = event.target.value;
+        let zone = this.props.zone;
+
+        this.state.name = name
+        if (this.state.timeout !== null)
+            clearTimeout(this.state.timeout);
+        this.state.timeout = setTimeout(this.update,1000);
+        this.setState(this.state);
+    }
+
+    update = () => {
+        this.setState({timeout: null});
+        // TODO check if valid
+        this.props.zone.name = this.state.name;
+        this.props.update();
+        zones_instance.forceUpdate();
     }
 
     render() {
@@ -60,6 +85,17 @@ class ZoneInfo_ extends React.Component {
             <Card className={classes.card}>
             <CardContent>
                 <FormControl className={classes.formControl}>
+                <div>
+                <FormGroup row key="name">
+                <TextField
+                    label="Zone Name"
+                    value={this.state.name}
+                    onChange={this.changeZoneName}
+                    className={classes.textField}
+                    margin="normal"
+                />
+                </FormGroup>
+                </div>
                 <InputLabel htmlFor="module">Animation</InputLabel>
                 <Select
                     value={this.state.module}
