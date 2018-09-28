@@ -13,6 +13,7 @@ const providePlugin = new webpack.ProvidePlugin({
 
 
 module.exports = {
+    devtool: 'inline-source-map',
     module: {
         rules: [
             {
