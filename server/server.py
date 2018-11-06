@@ -4,12 +4,12 @@ import time
 
 from flask import Flask, jsonify, send_from_directory, request, abort
 from flask_cors import CORS
-import config
+import config as appconfig
 
 app = Flask(__name__)
 CORS(app)
 
-CONFIG_LOCATION = config.CONFIG_LOCATION
+CONFIG_LOCATION = appconfig.CONFIG_LOCATION
 
 #CONFIG_LOCATION = '/home/pi/.config/rgbd/config.json'
 
@@ -62,7 +62,7 @@ class ZoneManager(object):
         with open(CONFIG_LOCATION,'w') as f:
             json.dump(config, f, indent=2)
         time.sleep(1)
-        os.system(config.LIGHT_CTL+' reload-conf')
+        os.system(appconfig.LIGHT_CTL+' reload-conf')
 
     def set_zone(self, zone_id, new_zone):
         zone_id = str(zone_id)
