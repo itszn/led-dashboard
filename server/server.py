@@ -4,11 +4,13 @@ import time
 
 from flask import Flask, jsonify, send_from_directory, request, abort
 from flask_cors import CORS
+import config
 
 app = Flask(__name__)
 CORS(app)
 
-CONFIG_LOCATION = 'config.json'
+CONFIG_LOCATION = config.CONFIG_LOCATION
+
 #CONFIG_LOCATION = '/home/pi/.config/rgbd/config.json'
 
 if not os.path.exists(CONFIG_LOCATION):
@@ -18,19 +20,25 @@ class ZoneManager(object):
     def __init__(self):
         self.zones = {}
         self.zone_order = []
+        self.brightness = 255
+        self.power = True
 
         if os.path.exists('./current_zones.json'):
             with open('./current_zones.json','r') as f:
                 obj = json.load(f)
             self.zones = obj['zones']
             self.zone_order = obj['zone_order']
+            self.brightness = obj.get('brightness',255)
+            self.power = obj.get('power',True)
 
     def save_zones(self):
         with open('./current_zones.json','w') as f:
             json.dump({
                 'zones': self.zones,
-                'zone_order': self.zone_order
-            }, f)
+                'zone_order': self.zone_order,
+                'power': self.power,
+                'brightness': self.brightness
+            }, f, indent=2)
 
     def update_config(self):
         with open(CONFIG_LOCATION,'r') as f:
@@ -49,11 +57,12 @@ class ZoneManager(object):
             })
 
         config['zones'] = zones
+        config['strip_config']['brightness'] = self.brightness if self.power else 0
 
         with open(CONFIG_LOCATION,'w') as f:
-            json.dump(config, f)
+            json.dump(config, f, indent=2)
         time.sleep(1)
-        os.system('lightctl reload-conf')
+        os.system(config.LIGHT_CTL+' reload-conf')
 
     def set_zone(self, zone_id, new_zone):
         zone_id = str(zone_id)
@@ -108,7 +117,7 @@ def add_zone():
         for zone_id in zones.zone_order:
             current_zones.append(zones.zones[zone_id])
 
-        return jsonify(zones=current_zones)
+        return jsonify(zones=current_zones, brightness=zones.brightness, power=zones.power)
 
     data = request.get_json(force=True)
 
@@ -148,6 +157,13 @@ def update_zone(zone_id):
     data = request.get_json(force=True)
 
     zones.set_zone(zone_id, data['zone'])
+
+    zones.save_and_update()
+    return jsonify(result=True)
+
+@app.route('/power/<string:value>', methods=['PATCH'])
+def set_power(value):
+    zones.power = (value == 'on')
 
     zones.save_and_update()
     return jsonify(result=True)

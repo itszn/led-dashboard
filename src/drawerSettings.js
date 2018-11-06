@@ -18,12 +18,18 @@ const styles = theme => ({
 
 class DrawerSettings extends React.Component {
     state = {
-        powered: true,
+        powered: window.manager.power
     };
 
     handleTogglePower = () => {
+        let np = !this.state.powered;
         this.setState({
-            powered: !this.state.powered
+            powered: np
+        });
+        let mode = (np? 'on' : 'off');
+        $.ajax({
+            method:'PATCH',
+            url:`${window.URL}/power/${mode}`,
         });
     }
 

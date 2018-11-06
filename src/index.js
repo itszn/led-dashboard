@@ -71,6 +71,8 @@ class ModuleManager {
                     url: `${window.URL}/zones`,
                     success: data => {
                         this.zones = data['zones'];
+                        this.brightness = data['brightness']
+                        this.power = data['power']
 
                         window.max_id = 0;
                         for (let z of this.zones) {
